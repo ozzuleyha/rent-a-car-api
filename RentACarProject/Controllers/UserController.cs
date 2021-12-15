@@ -28,6 +28,7 @@ namespace RentACarProject.Controllers
             string query = @"SELECT * FROM dbo.[User] WHERE UserName='" + user.UserName + "' AND Password='" + user.Password + "'";
 
             DataTable table = new DataTable();
+            //int role = user.UserRoleId;
             string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
             SqlDataReader myReader;
             using (SqlConnection myCon = new SqlConnection(sqlDataSource))
@@ -37,17 +38,74 @@ namespace RentACarProject.Controllers
                 {
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
+                    //role = (Int32)myCommand.ExecuteScalar();
                     myReader.Close();
                 }
             }
+            //int UserRole = Convert.ToInt32(table.Rows[0])
             if (table.Rows.Count == 0)
             {
                 return new JsonResult("Yanlış bilgi girildi!");
             }
             else
             {
-                return new JsonResult(table);
+                int userRoleId = table.Rows[0].Field<int>("UserRoleId");
+                int userId = table.Rows[0].Field<int>("id");
+                switch (userRoleId)
+                {
+                    case 1:
+                        string customerQuery = @"SELECT * FROM dbo.[Customer] WHERE UserId='" + userId + "'";
+
+                        DataTable customerTable = new DataTable();
+                        using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+                        {
+                            myCon.Open();
+                            using (SqlCommand myCommand = new SqlCommand(customerQuery, myCon))
+                            {
+                                myReader = myCommand.ExecuteReader();
+                                customerTable.Load(myReader);
+                                myReader.Close();
+                            }
+                            if (table.Rows.Count == 0)
+                            {
+                                return new JsonResult("customer tablosunda kullanıcı yok!");
+                            }
+                            else
+                            {
+                                customerTable.Columns.Add("UserRoleId", typeof(int));
+                                customerTable.Rows[0]["UserRoleId"] = userRoleId;
+                                return new JsonResult(customerTable);
+                            }
+                        }
+                    case 2:
+                        string employeeQuery = @"SELECT * FROM dbo.[Employee] WHERE UserId='" + userId + "'";
+                        DataTable employeeTable = new DataTable();
+                        using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+                        {
+                            myCon.Open();
+                            using (SqlCommand myCommand = new SqlCommand(employeeQuery, myCon))
+                            {
+
+                                myReader = myCommand.ExecuteReader();
+                                employeeTable.Load(myReader);
+                                myReader.Close();
+                            }
+                            if (table.Rows.Count == 0)
+                            {
+                                return new JsonResult("Employee tablosunda kullanıcı yok!");
+                            }
+                            else
+                            {
+                                return new JsonResult(employeeTable);
+                            }
+                        }
+                    case 3:
+                        return new JsonResult(table);
+                    default:
+                        return new JsonResult("Yanlıs bilgi");
+                }
             }
         }
     }
 }
+
