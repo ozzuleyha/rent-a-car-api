@@ -96,6 +96,8 @@ namespace RentACarProject.Controllers
                             }
                             else
                             {
+                                employeeTable.Columns.Add("UserRoleId", typeof(int));
+                                employeeTable.Rows[0]["UserRoleId"] = userRoleId;
                                 return new JsonResult(employeeTable);
                             }
                         }
