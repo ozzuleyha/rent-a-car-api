@@ -75,6 +75,7 @@ namespace RentACarProject.Controllers
                     myReader.Close();
                 }
             }
+
             return new JsonResult("Added Successfully");
         }
     }

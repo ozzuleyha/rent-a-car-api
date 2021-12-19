@@ -108,6 +108,36 @@ namespace RentACarProject.Controllers
                 }
             }
         }
+
+        [HttpPost("add-user")]
+        public JsonResult AddUser(User user)
+        {
+            //user tabkosuna eklemek gerekiyor öncelikle
+            string query = @"
+                            insert into dbo.[User]
+                            (UserName, Password, UserRoleId)
+                            values (@UserName,@Password,@UserRoleId)
+                            ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@UserName", user.UserName);
+                    myCommand.Parameters.AddWithValue("@Password", user.Password);
+                    myCommand.Parameters.AddWithValue("@UserRoleId", user.UserRoleId);
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+
+            return new JsonResult("Added Successfully");
+        }
     }
 }
 

@@ -9,6 +9,7 @@ namespace RentACarProject.Models
     {
         public int CustomerId { get; set; }
         public string CustomerName { get; set; }
+        public string CustomerEmail { get; set; }
         public string CustomerSurname { get; set; }
         public double CustomerTCKN { get; set; }
         public DateTime CustomerBirthDay { get; set; }

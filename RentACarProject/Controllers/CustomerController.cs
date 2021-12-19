@@ -45,5 +45,74 @@ namespace RentACarProject.Controllers
             }
             return new JsonResult(table);
         }
+
+        [HttpPost("add-customer")]
+        public JsonResult AddCustomer(Customer customer)
+        {
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            
+
+            string UserQuery = @"SELECT TOP 1 * FROM dbo.[User] ORDER BY id DESC";
+
+            DataTable UserTable = new DataTable();
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(UserQuery, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    UserTable.Load(myReader);
+                    myReader.Close();
+                }
+            }
+
+            
+
+            int userId = UserTable.Rows[0].Field<int>("id");
+
+            string CustomerQuery = @"
+                            insert into dbo.[Customer]
+                            (CustomerName, CustomerSurname, CustomerBirthDay, CustomerDrivingLicenseDate,CustomerEmail,UserId)
+                            values (@CustomerName,@CustomerSurname,@CustomerBirthDay,@CustomerDrivingLİcenseDate,@CustomerEmail,@UserId)
+                            ";
+
+            DataTable CustomerTable = new DataTable();
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(CustomerQuery, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@CustomerName", customer.CustomerName);
+                    myCommand.Parameters.AddWithValue("@CustomerSurname", customer.CustomerSurname);
+                    myCommand.Parameters.AddWithValue("@CustomerBirthDay", customer.CustomerBirthDay);
+                    myCommand.Parameters.AddWithValue("@CustomerDrivingLicenseDate", customer.CustomerDrivingLicenseDate);
+                    myCommand.Parameters.AddWithValue("@CustomerEmail", customer.CustomerEmail);
+                    myCommand.Parameters.AddWithValue("@UserId", userId);
+                    myReader = myCommand.ExecuteReader();
+                    CustomerTable.Load(myReader);
+                    myReader.Close();
+                }
+            }
+
+            return new JsonResult("Added Successfully");
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
