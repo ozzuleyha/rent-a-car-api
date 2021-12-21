@@ -23,10 +23,10 @@ namespace RentACarProject.Controllers
         }
 
         [HttpGet]
-        public JsonResult Get()
+        public JsonResult CustomerCount()
         {
             string query = @"
-                            select CustomerName from
+                            SELECT COUNT(*) AS 'customer_count' FROM
                             dbo.Customer
                             ";
 

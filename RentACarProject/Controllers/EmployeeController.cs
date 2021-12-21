@@ -24,10 +24,10 @@ namespace RentACarProject.Controllers
 
         //Employee bilgi çekme
         [HttpGet]
-        public JsonResult Get()
+        public JsonResult EmployeeCount()
         {
             string query = @"
-                            select EmployeeName from
+                            SELECT COUNT(*) AS 'employee_count' FROM
                             dbo.Employee
                             ";
 
