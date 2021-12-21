@@ -73,8 +73,8 @@ namespace RentACarProject.Controllers
 
             string CustomerQuery = @"
                             insert into dbo.[Customer]
-                            (CustomerName, CustomerSurname, CustomerBirthDay, CustomerDrivingLicenseDate,CustomerEmail,UserId)
-                            values (@CustomerName,@CustomerSurname,@CustomerBirthDay,@CustomerDrivingLİcenseDate,@CustomerEmail,@UserId)
+                            (CustomerName, CustomerSurname,CustomerEmail,UserId)
+                            values (@CustomerName,@CustomerSurname,@CustomerEmail,@UserId)
                             ";
 
             DataTable CustomerTable = new DataTable();
@@ -85,8 +85,8 @@ namespace RentACarProject.Controllers
                 {
                     myCommand.Parameters.AddWithValue("@CustomerName", customer.CustomerName);
                     myCommand.Parameters.AddWithValue("@CustomerSurname", customer.CustomerSurname);
-                    myCommand.Parameters.AddWithValue("@CustomerBirthDay", customer.CustomerBirthDay);
-                    myCommand.Parameters.AddWithValue("@CustomerDrivingLicenseDate", customer.CustomerDrivingLicenseDate);
+                    //myCommand.Parameters.AddWithValue("@CustomerBirthDay", customer.CustomerBirthDay);
+                    //myCommand.Parameters.AddWithValue("@CustomerDrivingLicenseDate", customer.CustomerDrivingLicenseDate);
                     myCommand.Parameters.AddWithValue("@CustomerEmail", customer.CustomerEmail);
                     myCommand.Parameters.AddWithValue("@UserId", userId);
                     myReader = myCommand.ExecuteReader();
