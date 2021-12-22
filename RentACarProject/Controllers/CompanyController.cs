@@ -22,11 +22,35 @@ namespace RentACarProject.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet]
+        [HttpGet("company-count")]
         public JsonResult CompanyCount()
         {
             string query = @"
                             SELECT COUNT(*) AS 'company_count' FROM
+                            dbo.Company
+                            ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult(table);
+        }
+
+        [HttpGet("company-list")]
+        public JsonResult getCompanyList()
+        {
+            string query = @"
+                            SELECT * FROM
                             dbo.Company
                             ";
 

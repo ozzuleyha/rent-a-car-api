@@ -22,11 +22,35 @@ namespace RentACarProject.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet]
+        [HttpGet("customer-count")]
         public JsonResult CustomerCount()
         {
             string query = @"
                             SELECT COUNT(*) AS 'customer_count' FROM
+                            dbo.Customer
+                            ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult(table);
+        }
+
+        [HttpGet("customer-list")]
+        public JsonResult getCustomerList()
+        {
+            string query = @"
+                            SELECT * FROM
                             dbo.Customer
                             ";
 
@@ -53,7 +77,7 @@ namespace RentACarProject.Controllers
             SqlDataReader myReader;
             
 
-            string UserQuery = @"SELECT TOP 1 * FROM dbo.[User] ORDER BY id DESC";
+            string UserQuery = @"SELECT TOP 1 * FROM dbo.[User] ORDER BY id DESC";  
 
             DataTable UserTable = new DataTable();
             using (SqlConnection myCon = new SqlConnection(sqlDataSource))

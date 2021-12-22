@@ -23,7 +23,7 @@ namespace RentACarProject.Controllers
         }
 
         //Employee bilgi çekme
-        [HttpGet]
+        [HttpGet("employee-count")]
         public JsonResult EmployeeCount()
         {
             string query = @"
@@ -77,6 +77,30 @@ namespace RentACarProject.Controllers
             }
 
             return new JsonResult("Added Successfully");
+        }
+
+        [HttpGet("employee-list")]
+        public JsonResult getEmployeeList()
+        {
+            string query = @"
+                            SELECT * FROM
+                            dbo.Employee
+                            ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult(table);
         }
     }
 }
