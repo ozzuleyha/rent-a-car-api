@@ -69,5 +69,35 @@ namespace RentACarProject.Controllers
             }
             return new JsonResult(table);
         }
+
+        [HttpPost("add-company")]
+        public JsonResult AddCompany(Company company)
+        {
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+
+            string EmployeeQuery = @"
+                            insert into dbo.[Company]
+                            (CompanyName, CompanyCity,CompanyAdress)
+                            values (@CompanyName,@CompanyCity,@CompanyAdress)
+                            ";
+
+            DataTable CustomerTable = new DataTable();
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(EmployeeQuery, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@CompanyName", company.CompanyName);
+                    myCommand.Parameters.AddWithValue("@CompanyCity", company.CompanyCity);
+                    myCommand.Parameters.AddWithValue("@CompanyAdress", company.CompanyAdress);
+                    myReader = myCommand.ExecuteReader();
+                    CustomerTable.Load(myReader);
+                    myReader.Close();
+                }
+            }
+
+            return new JsonResult("Added Successfully");
+        }
     }
 }
