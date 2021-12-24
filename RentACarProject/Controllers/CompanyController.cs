@@ -99,6 +99,35 @@ namespace RentACarProject.Controllers
 
             return new JsonResult("Added Successfully");
         }
+
+        [HttpPut("update-company")]
+        public JsonResult UpdateCompany(Company company)
+        {
+            string query = @"UPDATE dbo.[Company]
+                             SET (CompanyName=@CompanyName, CompanyCity=@CompanyCity, CompanyAdress=@CompanyAdress)
+                             WHERE (id=@id)
+                             ";
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@id", company.CompanyId);
+                    myCommand.Parameters.AddWithValue("@CompanyName", company.CompanyName);
+                    myCommand.Parameters.AddWithValue("@CompanyCity", company.CompanyCity);
+                    myCommand.Parameters.AddWithValue("@CompanyAdress", company.CompanyAdress);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult("Updated Successfully");
+        }
+
         [HttpDelete("delete-company")]
         public JsonResult DeleteCompany(Company company)
         {

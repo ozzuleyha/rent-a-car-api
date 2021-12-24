@@ -103,6 +103,33 @@ namespace RentACarProject.Controllers
             return new JsonResult(table);
         }
 
+        [HttpPut ("update-employee")]
+        public JsonResult UpdateEmployee(Employee employee)
+        {
+            string query = @"UPDATE dbo.[Employee]
+                             SET EmployeeName=@EmployeeName, EmployeeSurname=@EmployeeSurname
+                             WHERE id=@id
+                             ";
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@id", employee.EmployeeId);
+                    myCommand.Parameters.AddWithValue("@EmployeeName", employee.EmployeeName);
+                    myCommand.Parameters.AddWithValue("@EmployeeSurname", employee.EmployeeSurname);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult("Updated Successfully");
+         }
+
         [HttpDelete("delete-employee")]
         public JsonResult DeleteEmployee(Employee employee)
         {

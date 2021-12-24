@@ -109,6 +109,33 @@ namespace RentACarProject.Controllers
             }
         }
 
+        [HttpPut("update-user")]
+        public JsonResult UpdateUser(User user)
+        {
+            string query = @"UPDATE dbo.[User]
+                             SET Username=@Username, Password=@Password
+                             WHERE id=@id
+                             ";
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@id", user.UserId);
+                    myCommand.Parameters.AddWithValue("@Username", user.UserName);
+                    myCommand.Parameters.AddWithValue("@Password", user.Password);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult("Updated Successfully");
+        }
+
         [HttpPost("add-user")]
         public JsonResult AddUser(User user)
         {
