@@ -47,6 +47,32 @@ namespace RentACarProject.Controllers
             return new JsonResult(table);
         }
 
+        [HttpDelete("delete-car")]
+        public JsonResult DeleteCar(Car car)
+        {
+            string query = @"
+                            delete from dbo.[Vehicle]
+                            where id = @id
+                            ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@id", car.CarId);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult("Deleted Successfully");
+        }
+
         [HttpGet("car-list")]
         public JsonResult getCarList()
         {

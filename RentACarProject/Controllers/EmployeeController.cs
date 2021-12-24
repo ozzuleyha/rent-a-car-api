@@ -102,6 +102,33 @@ namespace RentACarProject.Controllers
             }
             return new JsonResult(table);
         }
+
+        [HttpDelete("delete-employee")]
+        public JsonResult DeleteEmployee(Employee employee)
+        {
+            string query = @"
+                            delete from dbo.[Employee]
+                            where id = @id
+                            ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@id", employee.EmployeeId);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult("Deleted Successfully");
+        }
+
         [HttpPost("add-employee")]
         public JsonResult AddEmployee(Employee employee)
         {
@@ -151,5 +178,7 @@ namespace RentACarProject.Controllers
 
             return new JsonResult("Added Successfully");
         }
+
+
     }
 }

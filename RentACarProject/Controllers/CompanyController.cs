@@ -99,5 +99,30 @@ namespace RentACarProject.Controllers
 
             return new JsonResult("Added Successfully");
         }
+        [HttpDelete("delete-company")]
+        public JsonResult DeleteCompany(Company company)
+        {
+            string query = @"
+                            delete from dbo.[Company]
+                            where id = @id
+                            ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@id", company.CompanyId);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult("Deleted Successfully");
+        }
     }
 }
