@@ -109,6 +109,30 @@ namespace RentACarProject.Controllers
             }
         }
 
+        [HttpGet("user-list")]
+        public JsonResult getUserList()
+        {
+            string query = @"
+                            SELECT * FROM
+                            dbo.[User]
+                            ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult(table);
+        }
+
         [HttpPut("update-user")]
         public JsonResult UpdateUser(User user)
         {

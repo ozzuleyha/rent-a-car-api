@@ -81,7 +81,7 @@ namespace RentACarProject.Controllers
 
         [HttpGet("employee-list")]
         public JsonResult getEmployeeList()
-        {
+        {   
             string query = @"
                             SELECT * FROM
                             dbo.Employee
