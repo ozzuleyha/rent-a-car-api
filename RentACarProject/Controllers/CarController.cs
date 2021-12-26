@@ -9,6 +9,8 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using RentACarProject.Models;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace RentACarProject.Controllers
 {
@@ -17,10 +19,46 @@ namespace RentACarProject.Controllers
     public class CarController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
 
-        public CarController(IConfiguration configuration)
+        public CarController(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
+            _env = env;
+        }
+
+        [HttpPost("add-car")]
+        public JsonResult AddCar(Car car)
+        {
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+
+            string CarQuery = @"
+                            insert into dbo.[Car]
+                            (CarName, CarModel ,RentPrice, RequiredLicenseAge, SeatingCapacity, Airbag, CompanyId)
+                            values (@CarName,@CarModel,@RentPrice, @RequiredLicenseAge, @SeatingCapacity, @Airbag, @CompanyId)
+                            ";
+
+            DataTable CarTable = new DataTable();
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(CarQuery, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@CarName", car.CarName);
+                    myCommand.Parameters.AddWithValue("@CarModel", car.CarModel);
+                    myCommand.Parameters.AddWithValue("@RentPrice", car.RentPrice);
+                    myCommand.Parameters.AddWithValue("@RequiredLicenseAge", car.RequiredLicenseAge);
+                    myCommand.Parameters.AddWithValue("@SeatingCapacity", car.SeatingCapacity);
+                    myCommand.Parameters.AddWithValue("@Airbag", car.Airbag);
+                    myCommand.Parameters.AddWithValue("@CompanyId", car.CompanyId);
+                    myReader = myCommand.ExecuteReader();
+                    CarTable.Load(myReader);
+                    myReader.Close();
+                }
+            }
+
+            return new JsonResult("Added Successfully");
         }
 
         [HttpGet("car-count")]
@@ -28,7 +66,7 @@ namespace RentACarProject.Controllers
         {
             string query = @"
                             SELECT COUNT(*) AS 'car_count' FROM
-                            dbo.Vehicle
+                            dbo.Car
                             ";
 
             DataTable table = new DataTable();
@@ -51,7 +89,7 @@ namespace RentACarProject.Controllers
         public JsonResult DeleteCar(Car car)
         {
             string query = @"
-                            delete from dbo.[Vehicle]
+                            delete from dbo.[Car]
                             where id = @id
                             ";
 
@@ -78,7 +116,7 @@ namespace RentACarProject.Controllers
         {
             string query = @"
                             SELECT * FROM
-                            dbo.Vehicle
+                            dbo.Car
                             ";
 
             DataTable table = new DataTable();
@@ -95,6 +133,31 @@ namespace RentACarProject.Controllers
                 }
             }
             return new JsonResult(table);
+        }
+
+        [Route("SaveFile")]
+        [HttpPost]
+        public JsonResult SaveFile()
+        {
+            try
+            {
+                var httpRequest = Request.Form;
+                var postedFile = httpRequest.Files[0];
+                string filename = postedFile.FileName;
+                var physicalPath = _env.ContentRootPath + "/Photos/" + filename;
+
+                using(var stream = new FileStream(physicalPath, FileMode.Create))
+                {
+                    postedFile.CopyTo(stream);
+                }
+
+                return new JsonResult(filename);
+            }
+            catch (Exception)
+            {
+
+                return new JsonResult("anonymous.png");
+            }
         }
     }
 }

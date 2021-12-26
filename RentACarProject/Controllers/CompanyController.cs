@@ -76,23 +76,23 @@ namespace RentACarProject.Controllers
             string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
             SqlDataReader myReader;
 
-            string EmployeeQuery = @"
+            string CompanyQuery = @"
                             insert into dbo.[Company]
                             (CompanyName, CompanyCity,CompanyAdress)
                             values (@CompanyName,@CompanyCity,@CompanyAdress)
                             ";
 
-            DataTable CustomerTable = new DataTable();
+            DataTable CompanyTable = new DataTable();
             using (SqlConnection myCon = new SqlConnection(sqlDataSource))
             {
                 myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(EmployeeQuery, myCon))
+                using (SqlCommand myCommand = new SqlCommand(CompanyQuery, myCon))
                 {
                     myCommand.Parameters.AddWithValue("@CompanyName", company.CompanyName);
                     myCommand.Parameters.AddWithValue("@CompanyCity", company.CompanyCity);
                     myCommand.Parameters.AddWithValue("@CompanyAdress", company.CompanyAdress);
                     myReader = myCommand.ExecuteReader();
-                    CustomerTable.Load(myReader);
+                    CompanyTable.Load(myReader);
                     myReader.Close();
                 }
             }
