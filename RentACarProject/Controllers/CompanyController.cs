@@ -103,9 +103,10 @@ namespace RentACarProject.Controllers
         [HttpPut("update-company")]
         public JsonResult UpdateCompany(Company company)
         {
-            string query = @"UPDATE dbo.[Company]
-                             SET (CompanyName=@CompanyName, CompanyCity=@CompanyCity, CompanyAdress=@CompanyAdress)
-                             WHERE (id=@id)
+            string query = @"
+                             UPDATE dbo.Company
+                             SET CompanyName=@CompanyName, CompanyCity=@CompanyCity, CompanyAdress=@CompanyAdress
+                             WHERE id=@id
                              ";
             DataTable table = new DataTable();
             string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
