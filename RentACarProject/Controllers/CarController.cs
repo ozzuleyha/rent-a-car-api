@@ -146,7 +146,7 @@ namespace RentACarProject.Controllers
                 string filename = postedFile.FileName;
                 var physicalPath = _env.ContentRootPath + "/Photos/" + filename;
 
-                using(var stream = new FileStream(physicalPath, FileMode.Create))
+                using (var stream = new FileStream(physicalPath, FileMode.Create))
                 {
                     postedFile.CopyTo(stream);
                 }
