@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using System.Data;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -144,13 +143,12 @@ namespace RentACarProject.Controllers
             return new JsonResult("Deleted Successfully");
         }
 
-        [HttpPost("car-list")]
-        public JsonResult getCarList(Company company)
+        [HttpGet("car-list")]
+        public JsonResult getCarList()
         {
             string query = @"
                             SELECT * FROM
                             dbo.Car
-                            where CompanyId=@CompanyId
                             ";
 
             DataTable table = new DataTable();
@@ -161,7 +159,6 @@ namespace RentACarProject.Controllers
                 myCon.Open();
                 using (SqlCommand myCommand = new SqlCommand(query, myCon))
                 {
-                    myCommand.Parameters.AddWithValue("@CompanyId", company.CompanyId);
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
                     myReader.Close();
