@@ -30,8 +30,8 @@ namespace RentACarProject.Controllers
 
             string CompanyQuery = @"
                             insert into dbo.[RentInformation]
-                            (SituationId, CarStartKm,CarFinalKm, RentPrice, RentCustomerId, RentCarId)
-                            values (@SituationId,@CarStartKm,@CarFinalKm, @RentPrice, @RentCustomerId, @RentCarId)
+                            (SituationId, RentPrice, RentCustomerId, RentCarId)
+                            values (@SituationId, @RentPrice, @RentCustomerId, @RentCarId)
                             ";
 
             DataTable CompanyTable = new DataTable();
@@ -41,8 +41,6 @@ namespace RentACarProject.Controllers
                 using (SqlCommand myCommand = new SqlCommand(CompanyQuery, myCon))
                 {
                     myCommand.Parameters.AddWithValue("@SituationId", rentInformation.SituationId);
-                    myCommand.Parameters.AddWithValue("@CarStartKm", rentInformation.CarStartKm);
-                    myCommand.Parameters.AddWithValue("@CarFinalKm", rentInformation.CarFinalKm);
                     myCommand.Parameters.AddWithValue("@RentPrice", rentInformation.RentPrice);
                     myCommand.Parameters.AddWithValue("@RentCustomerId", rentInformation.RentCustomerId);
                     myCommand.Parameters.AddWithValue("@RentCarId", rentInformation.RentCarId);
