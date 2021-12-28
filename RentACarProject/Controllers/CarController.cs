@@ -144,12 +144,13 @@ namespace RentACarProject.Controllers
             return new JsonResult("Deleted Successfully");
         }
 
-        [HttpGet("car-list")]
-        public JsonResult getCarList()
+        [HttpPost("car-list")]
+        public JsonResult getCarList(Company company)
         {
             string query = @"
                             SELECT * FROM
                             dbo.Car
+                            where CompanyId=@CompanyId
                             ";
 
             DataTable table = new DataTable();
@@ -160,6 +161,7 @@ namespace RentACarProject.Controllers
                 myCon.Open();
                 using (SqlCommand myCommand = new SqlCommand(query, myCon))
                 {
+                    myCommand.Parameters.AddWithValue("@CompanyId", company.CompanyId);
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
                     myReader.Close();
