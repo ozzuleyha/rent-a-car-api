@@ -149,6 +149,7 @@ namespace RentACarProject.Controllers
             string query = @"
                             SELECT * FROM
                             dbo.Car
+                            WHERE SituationId=3
                             ";
 
             DataTable table = new DataTable();
