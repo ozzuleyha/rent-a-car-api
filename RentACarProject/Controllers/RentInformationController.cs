@@ -53,15 +53,16 @@ namespace RentACarProject.Controllers
             return new JsonResult("Added Successfully");
         }
         [HttpGet("rent-request-list")]
-        public JsonResult getCompanyList()
+        public JsonResult GetRentRequests()
         {
             string query = @"
-                            SELECT customer.id, customer.CustomerName, customer.CustomerSurname, car.CarName
+                            SELECT customer.id, customer.CustomerName, customer.CustomerSurname, car.CarName, rent.id As rentInformationId
                             FROM dbo.RentInformation rent
                             INNER JOIN dbo.Customer customer
                             ON rent.RentCustomerId = customer.id
                             INNER JOIN dbo.Car car
                             ON rent.RentCarId = car.id
+                            WHERE rent.SituationId=1
                             ORDER BY rent.id;
                                                         ";
 
@@ -80,5 +81,33 @@ namespace RentACarProject.Controllers
             }
             return new JsonResult(table);
         }
+
+        [HttpPut("update-rent-information")]
+        public JsonResult UpdateRentInformation(RentInformation rentInformation)
+        {
+            string query = @"
+                             UPDATE dbo.RentInformation
+                             SET SituationId=@SituationId
+                             WHERE id=@id
+                             ";
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@id", rentInformation.RentId);
+                    myCommand.Parameters.AddWithValue("@SituationId", rentInformation.SituationId);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult("Updated Successfully");
+        }
+
     }
 }
