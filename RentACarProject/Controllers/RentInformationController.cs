@@ -52,5 +52,33 @@ namespace RentACarProject.Controllers
 
             return new JsonResult("Added Successfully");
         }
+        [HttpGet("rent-request-list")]
+        public JsonResult getCompanyList()
+        {
+            string query = @"
+                            SELECT customer.id, customer.CustomerName, customer.CustomerSurname, car.CarName
+                            FROM dbo.RentInformation rent
+                            INNER JOIN dbo.Customer customer
+                            ON rent.RentCustomerId = customer.id
+                            INNER JOIN dbo.Car car
+                            ON rent.RentCarId = car.id
+                            ORDER BY rent.id;
+                                                        ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult(table);
+        }
     }
 }
