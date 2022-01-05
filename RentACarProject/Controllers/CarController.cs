@@ -61,7 +61,7 @@ namespace RentACarProject.Controllers
         }
 
         [HttpPut("update-car")]
-        public JsonResult UpdateCompany(Car  car)
+        public JsonResult UpdateCar(Car  car)
         {
             string query = @"
                              UPDATE dbo.Car
@@ -84,6 +84,33 @@ namespace RentACarProject.Controllers
                     myCommand.Parameters.AddWithValue("@SeatingCapacity", car.SeatingCapacity);
                     myCommand.Parameters.AddWithValue("@Airbag", car.Airbag);
                     myCommand.Parameters.AddWithValue("@CompanyId", car.CompanyId);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult("Updated Successfully");
+        }
+
+        [HttpPut("update-car-situation")]
+        public JsonResult UpdateCarSituation(Car car)
+        {
+            string query = @"
+                             UPDATE dbo.Car
+                             SET SituationId=@SituationId
+                             WHERE id=@id
+                             ";
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@id", car.CarId);
+                    myCommand.Parameters.AddWithValue("@SituationId", car.SituationId);
 
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);

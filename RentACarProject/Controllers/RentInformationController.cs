@@ -82,6 +82,37 @@ namespace RentACarProject.Controllers
             return new JsonResult(table);
         }
 
+        [HttpPost("rent-result-list")]
+        public JsonResult GetRentResult(Customer customer)
+        {
+            string query = @"
+                            SELECT car.id, car.CarName, car.CarModel, rent.SituationId, rent.id As rentInformationId
+                            FROM dbo.RentInformation rent
+                            INNER JOIN dbo.Customer customer
+                            ON rent.RentCustomerId = customer.id
+                            INNER JOIN dbo.Car car
+                            ON rent.RentCarId = car.id
+                            WHERE customer.id=@CustomerId
+                            ORDER BY rent.id;
+                                                        ";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("RentACarAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myCommand.Parameters.AddWithValue("@CustomerId", customer.CustomerId);
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+                    myReader.Close();
+                }
+            }
+            return new JsonResult(table);
+        }
+
         [HttpPut("update-rent-information")]
         public JsonResult UpdateRentInformation(RentInformation rentInformation)
         {

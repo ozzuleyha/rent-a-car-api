@@ -15,6 +15,7 @@ namespace RentACarProject.Models
         public int RequiredLicenseAge { get; set; }
         public int SeatingCapacity { get; set; }
         public string Airbag { get; set; }
+        public int SituationId { get; set; }
         public string PhotoFileName { get; set; }
     }
 }
